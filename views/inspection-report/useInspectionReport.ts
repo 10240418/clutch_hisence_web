@@ -45,13 +45,13 @@ export const useInspectionReportData = () => {
   const productLines = ref<any[]>([]);
 
   const columns = [
-    { title: '物料编码/批次号', dataIndex: 'productModelSN', key: 'productModelSN' },
+    { title: '供应商', dataIndex: 'supplierName', key: 'supplierName' },
     { title: '产品型号', dataIndex: 'description', key: 'description' },
+    { title: '物料编码/批次号', dataIndex: 'productModelSN', key: 'productModelSN' },
     { title: '产线', dataIndex: 'productLine', key: 'productLine' },
     { title: '检测总数', dataIndex: 'inspectionCount', key: 'inspectionCount' },
     { title: '合格数', dataIndex: 'qualifiedCount', key: 'qualifiedCount' },
     { title: '不合格数', dataIndex: 'unqualifiedCount', key: 'unqualifiedCount' },
-    { title: '供应商', dataIndex: 'supplierName', key: 'supplierName' },
     { title: '检验日期', dataIndex: 'inspectionDate', key: 'inspectionDate', customRender: ({ text }: { text: string }) => text ? dayjs(text).format('YYYY-MM-DD') : '' },
   ];
 
@@ -72,7 +72,7 @@ export const useInspectionReportData = () => {
       query.startDate = dateRange.value[0].format('YYYY-MM-DD');
       query.endDate = dateRange.value[1].format('YYYY-MM-DD');
     }
-    
+
     return query;
   };
 
@@ -81,7 +81,7 @@ export const useInspectionReportData = () => {
     try {
       const response = await getInspectionReport(buildQuery());
       let responseData = response.data.data || [];
-      
+
       // 如果后端没有按产品线筛选，前端进行临时筛选
       if (selectedProductLineId.value && responseData.length > 0) {
         // 获取选中产品线的名称
@@ -90,7 +90,7 @@ export const useInspectionReportData = () => {
           responseData = responseData.filter((item: InspectionReportItem) => item.productLine === selectedLine.name);
         }
       }
-      
+
       data.value = responseData;
       pagination.value.total = responseData.length;
     } catch (error: any) {

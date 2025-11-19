@@ -46,14 +46,14 @@ export const useCostReportData = () => {
             key: 'supplierName',
         },
         {
-            title: '物料编码',
-            dataIndex: 'productModelSN',
-            key: 'productModelSN',
-        },
-        {
             title: '电机类型',
             dataIndex: 'motorType',
             key: 'motorType',
+        },
+        {
+            title: '物料编码',
+            dataIndex: 'productModelSN',
+            key: 'productModelSN',
         },
         {
             title: '检测总数',

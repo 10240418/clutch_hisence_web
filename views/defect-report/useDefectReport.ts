@@ -44,6 +44,11 @@ export const useDefectReportData = () => {
             key: 'supplierName',
         },
         {
+            title: '产品型号',
+            dataIndex: 'description',
+            key: 'description',
+        },
+        {
             title: '检测日期',
             dataIndex: 'qualityDate',
             key: 'qualityDate',
@@ -53,11 +58,6 @@ export const useDefectReportData = () => {
             title: '产品SN',
             dataIndex: 'productSN',
             key: 'productSN',
-        },
-        {
-            title: '产品型号',
-            dataIndex: 'description',
-            key: 'description',
         },
         {
             title: '批次号',

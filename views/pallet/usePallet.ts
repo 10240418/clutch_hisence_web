@@ -16,6 +16,11 @@ export const usePalletData = () => {
 
     const columns = [
         {
+            title: '产品型号',
+            dataIndex: ['productModel', 'description'],
+            key: 'productModel',
+        },
+        {
             title: 'ID',
             dataIndex: 'id',
             key: 'id',
@@ -27,19 +32,14 @@ export const usePalletData = () => {
             key: 'sn',
         },
         {
-            title: '产品型号',
-            dataIndex: ['productModel', 'description'],
-            key: 'productModel',
+            title: '产品线',
+            dataIndex: ['productLine', 'name'],
+            key: 'productLine',
         },
         {
             title: '目标数量',
             dataIndex: 'goal',
             key: 'goal',
-        },
-        {
-            title: '产品线',
-            dataIndex: ['productLine', 'name'],
-            key: 'productLine',
         },
         {
             title: '开始时间',

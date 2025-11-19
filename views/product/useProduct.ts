@@ -46,6 +46,11 @@ export const useProductData = () => {
 
     const columns = [
         {
+            title: '产品型号',
+            dataIndex: ['productModel', 'description'],
+            key: 'productModel',
+        },
+        {
             title: 'ID',
             dataIndex: 'id',
             key: 'id',
@@ -55,11 +60,6 @@ export const useProductData = () => {
             title: 'SN',
             dataIndex: 'sn',
             key: 'sn',
-        },
-        {
-            title: '产品型号',
-            dataIndex: ['productModel', 'description'],
-            key: 'productModel',
         },
         {
             title: '产品线',
