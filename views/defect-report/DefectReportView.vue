@@ -12,10 +12,8 @@ const {
     data,
     isLoading,
     suppliers,
-    productModels,
     list,
     loadSuppliers,
-    loadProductModels,
     resetFilters,
     exportToExcel
 } = useDefectReportData();
@@ -64,7 +62,6 @@ const onExport = () => {
 // Load data when component is mounted
 onMounted(async () => {
     await loadSuppliers();
-    await loadProductModels();
     list();
 });
 </script>
@@ -82,11 +79,7 @@ onMounted(async () => {
                     </a-select-option>
                 </a-select>
 
-                <a-select v-model:value="selectedProductModelSN" placeholder="选择产品型号" allowClear style="width: 200px;">
-                    <a-select-option v-for="model in productModels" :key="model.sn" :value="model.sn">
-                        {{ model.sn }} - {{ model.description }}
-                    </a-select-option>
-                </a-select>
+                <a-input v-model:value="selectedProductModelSN" placeholder="输入产品型号" allowClear style="width: 200px;" />
             </div>
 
             <div style="display: flex; gap: 8px;">

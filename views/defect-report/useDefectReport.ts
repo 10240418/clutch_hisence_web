@@ -1,7 +1,7 @@
 import { ref } from 'vue';
 import { message } from 'ant-design-vue';
 import dayjs, { Dayjs } from 'dayjs';
-import { getDefectReport, getSuppliers, getProductModels } from '@/httpapis/management';
+import { getDefectReport, getSuppliers } from '@/httpapis/management';
 import ExcelJS from 'exceljs';
 
 interface DefectReportItem {
@@ -26,7 +26,6 @@ export const useDefectReportData = () => {
     const isLoading = ref(false);
     const data = ref<DefectReportItem[]>([]);
     const suppliers = ref<any[]>([]);
-    const productModels = ref<any[]>([]);
     const pagination = ref({
         pageNum: 1,
         pageSize: 10,
@@ -94,15 +93,6 @@ export const useDefectReportData = () => {
             suppliers.value = response.data.data;
         } catch (error: any) {
             message.error(`加载供应商失败: ${error.response?.data?.error || error.message}`);
-        }
-    };
-
-    const loadProductModels = async () => {
-        try {
-            const response = await getProductModels({ pageSize: 100 });
-            productModels.value = response.data.data;
-        } catch (error: any) {
-            message.error(`加载产品型号失败: ${error.response?.data?.error || error.message}`);
         }
     };
 
@@ -279,7 +269,6 @@ export const useDefectReportData = () => {
         isLoading,
         data,
         suppliers,
-        productModels,
         columns,
         pagination,
         dateRange,
@@ -287,7 +276,6 @@ export const useDefectReportData = () => {
         selectedProductModelSN,
         list,
         loadSuppliers,
-        loadProductModels,
         resetFilters,
         exportToExcel
     };

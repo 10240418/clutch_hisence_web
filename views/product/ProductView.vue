@@ -24,46 +24,18 @@ const {
 const selectedProduct = ref<Product | null>(null);
 const isDetailDialogVisible = ref(false);
 
-// 防抖函数实现自动搜索
-let searchTimeout: NodeJS.Timeout | null = null;
-
-const autoSearch = () => {
-    if (searchTimeout) {
-        clearTimeout(searchTimeout);
-    }
-    searchTimeout = setTimeout(() => {
-        pagination.value.pageNum = 1;
-        list();
-    }, 500); // 500ms 延迟
+// 手动搜索函数
+const handleSearch = () => {
+    pagination.value.pageNum = 1;
+    list();
 };
 
-// 监听搜索关键词变化，自动触发搜索
-watch(searchKeyword, () => {
-    autoSearch();
-});
-
-// 监听产品线选择变化，自动触发搜索
-watch(selectedProductLineId, () => {
-    autoSearch();
-});
-
-// 监听时间范围变化，自动触发搜索
-watch(dateRange, () => {
-    autoSearch();
-}, { deep: true });
-
-// 监听是否有缺陷变化，自动触发搜索
+// 监听是否有缺陷变化，清空缺陷原因但不触发搜索
 watch(hasDefect, () => {
     // 如果取消勾选有缺陷，清空缺陷原因
     if (hasDefect.value === false || hasDefect.value === undefined) {
         defectReason.value = undefined;
     }
-    autoSearch();
-});
-
-// 监听缺陷原因变化，自动触发搜索
-watch(defectReason, () => {
-    autoSearch();
 });
 
 const showDetailDialog = (record: Product) => {
@@ -77,13 +49,11 @@ const onPageChange = () => {
 
 const onReset = () => {
     resetFilters();
-    list();
 };
 
-// Load data when component is mounted
+// Load product lines when component is mounted (but don't load product data)
 onMounted(async () => {
     await loadProductLines();
-    list();
 });
 </script>
 
@@ -98,8 +68,9 @@ onMounted(async () => {
                     </a-select-option>
                 </a-select>
                 <a-range-picker v-model:value="dateRange" format="YYYY-MM-DD HH:mm" :showTime="{ format: 'HH:mm' }" />
-                <a-input-search v-model:value="searchKeyword" placeholder="输入托盘SN、产品SN或产品型号SAP进行查询"
-                    style="width: 350px;" allowClear />
+                <a-input v-model:value="searchKeyword" placeholder="输入托盘SN、产品SN或产品型号SAP进行查询"
+                    style="width: 350px;" allowClear @pressEnter="handleSearch" />
+                <a-button type="primary" @click="handleSearch" :disabled="!searchKeyword">搜索</a-button>
 
                 <a-checkbox v-model:checked="hasDefect">有缺陷</a-checkbox>
                 <a-select v-model:value="defectReason" placeholder="选择缺陷原因" allowClear v-if="hasDefect">
