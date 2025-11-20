@@ -68,7 +68,7 @@ onMounted(async () => {
                     </a-select-option>
                 </a-select>
                 <a-range-picker v-model:value="dateRange" format="YYYY-MM-DD HH:mm" :showTime="{ format: 'HH:mm' }" />
-                <a-input v-model:value="searchKeyword" placeholder="输入托盘SN、产品SN或产品型号SAP进行查询"
+                <a-input v-model:value="searchKeyword" placeholder="输入产品型号进行查询"
                     style="width: 350px;" allowClear @pressEnter="handleSearch" />
                 <a-button type="primary" @click="handleSearch" :disabled="!searchKeyword">搜索</a-button>
 

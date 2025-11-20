@@ -41,12 +41,12 @@ export const useCostReportData = () => {
 
     const columns = [
         {
-            title: '厂家名称',
+            title: '供应商',
             dataIndex: 'supplierName',
             key: 'supplierName',
         },
         {
-            title: '电机类型',
+            title: '产品型号',
             dataIndex: 'motorType',
             key: 'motorType',
         },

@@ -11,6 +11,7 @@ interface DefectReportItem {
     productModelSN: string;
     batchNumber: string;
     defectReason: string;
+    description?: string;
 }
 
 interface DefectReportQueryParams {
@@ -19,7 +20,7 @@ interface DefectReportQueryParams {
     startDate?: string;
     endDate?: string;
     supplierId?: number;
-    productModelSN?: string;
+    description?: string;
 }
 
 export const useDefectReportData = () => {
@@ -47,6 +48,11 @@ export const useDefectReportData = () => {
             title: '产品型号',
             dataIndex: 'description',
             key: 'description',
+        },
+        {
+            title: '物料编码',
+            dataIndex: 'productModelSN',
+            key: 'productModelSN',
         },
         {
             title: '检测日期',
@@ -77,8 +83,17 @@ export const useDefectReportData = () => {
 
         try {
             const response = await getDefectReport(query);
-            data.value = response.data.data;
-            pagination.value.total = response.data.pagination.total;
+            let defectData = response.data.data || [];
+
+            // Client-side filtering to ensure only matching description products are shown
+            if (selectedProductModelSN.value) {
+                defectData = defectData.filter((item: DefectReportItem) =>
+                    item.description === selectedProductModelSN.value
+                );
+            }
+
+            data.value = defectData;
+            pagination.value.total = defectData.length;
         } catch (error: any) {
             message.error(`获取缺陷报表失败: ${error.response?.data?.error || error.message}`);
             return Promise.reject(error);
@@ -112,7 +127,7 @@ export const useDefectReportData = () => {
 
         // Add filters if they have values
         if (selectedSupplierId.value) query.supplierId = selectedSupplierId.value;
-        if (selectedProductModelSN.value) query.productModelSN = selectedProductModelSN.value;
+        if (selectedProductModelSN.value) query.description = selectedProductModelSN.value;
 
         // Handle date range
         if (dateRange.value && dateRange.value.length === 2) {
@@ -121,6 +136,7 @@ export const useDefectReportData = () => {
         }
 
         return query;
+
     };
 
     // Excel导出功能
