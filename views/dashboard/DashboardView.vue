@@ -1,5 +1,8 @@
 <template>
-  <div class="dashboard" :class="{ 'dark-mode': isDarkMode }">
+  <div
+    class="dashboard"
+    :class="{ 'dark-mode': isDarkMode }"
+  >
     <div class="status-indicator-container">
       <div class="status-indicator">
         <div class="status-item">
@@ -15,18 +18,29 @@
 
     <!-- 深色模式切换按钮 -->
     <div class="theme-toggle">
-      <a-button :icon="isDarkMode ? h('span', '☀️') : h('span', '🌙')" @click="toggleTheme" class="toggle-btn"
-        :type="isDarkMode ? 'primary' : 'default'">
+      <a-button
+        :icon="isDarkMode ? h('span', '☀️') : h('span', '🌙')"
+        @click="toggleTheme"
+        class="toggle-btn"
+        :type="isDarkMode ? 'primary' : 'default'"
+      >
         {{ isDarkMode ? '浅色模式' : '深色模式' }}
       </a-button>
-      <a-button :icon="isFullscreen ? h('span', '🗗') : h('span', '⛶')" @click="toggleFullscreen" class="toggle-btn"
-        :type="isFullscreen ? 'primary' : 'default'">
+      <a-button
+        :icon="isFullscreen ? h('span', '🗗') : h('span', '⛶')"
+        @click="toggleFullscreen"
+        class="toggle-btn"
+        :type="isFullscreen ? 'primary' : 'default'"
+      >
         {{ isFullscreen ? '退出全屏' : '全屏模式' }}
       </a-button>
     </div>
 
     <!-- 科技感标题 -->
-    <div class="dashboard-header" :class="{ fullscreen: isFullscreen }">
+    <div
+      class="dashboard-header"
+      :class="{ fullscreen: isFullscreen }"
+    >
       <h1 class="title-text">VMI仓电机全检数字化平台</h1>
     </div>
 
@@ -34,10 +48,23 @@
     <div class="dashboard-controls">
       <div class="time-selector">
         <span class="control-label">时间范围：</span>
-        <a-date-picker v-model:value="startDate" placeholder="开始时间" :class="{ 'dark-picker': isDarkMode }" />
+        <a-date-picker
+          v-model:value="startDate"
+          placeholder="开始时间"
+          :class="{ 'dark-picker': isDarkMode }"
+        />
         <span class="time-separator">至</span>
-        <a-date-picker v-model:value="endDate" placeholder="结束时间" :class="{ 'dark-picker': isDarkMode }" />
-        <a-button type="primary" @click="handleManualRefresh" class="refresh-btn" :loading="loading">
+        <a-date-picker
+          v-model:value="endDate"
+          placeholder="结束时间"
+          :class="{ 'dark-picker': isDarkMode }"
+        />
+        <a-button
+          type="primary"
+          @click="handleManualRefresh"
+          class="refresh-btn"
+          :loading="loading"
+        >
           {{ loading ? '刷新中...' : '刷新数据' }}
         </a-button>
       </div>
@@ -58,52 +85,110 @@
     </div>
 
     <!-- 错误提示 -->
-    <a-alert v-if="error" :message="error" type="error" show-icon closable @close="clearError"
-      style="margin-bottom: 16px;" />
+    <a-alert
+      v-if="error"
+      :message="error"
+      type="error"
+      show-icon
+      closable
+      @close="clearError"
+      style="margin-bottom: 16px;"
+    />
 
     <a-row :gutter="[16, 16]">
       <!-- 第一行 -->
       <a-col :span="8">
         <!-- 合格率和完工率上下排布 -->
         <div class="vertical-charts">
-          <CustomCard title="合格率" :isDarkMode="isDarkMode" class="chart-card-half">
-            <v-chart ref="qualityRateChart" :option="qualityRateOption" class="chart-half" />
+          <CustomCard
+            title="合格率"
+            :isDarkMode="isDarkMode"
+            class="chart-card-half"
+          >
+            <v-chart
+              ref="qualityRateChart"
+              :option="qualityRateOption"
+              class="chart-half"
+            />
           </CustomCard>
-          <CustomCard title="完工率" :isDarkMode="isDarkMode" class="chart-card-half">
-            <v-chart ref="completionRateChart" :option="completionRateOption" class="chart-half" />
+          <CustomCard
+            title="完工率"
+            :isDarkMode="isDarkMode"
+            class="chart-card-half"
+          >
+            <v-chart
+              ref="completionRateChart"
+              :option="completionRateOption"
+              class="chart-half"
+            />
           </CustomCard>
         </div>
       </a-col>
       <a-col :span="8">
-        <CustomCard title="不良类型分布" :isDarkMode="isDarkMode" class="chart-card">
-          <v-chart ref="defectTypeChart" :option="defectTypeOption" class="chart" />
+        <CustomCard
+          title="不良类型分布"
+          :isDarkMode="isDarkMode"
+          class="chart-card"
+        >
+          <v-chart
+            ref="defectTypeChart"
+            :option="defectTypeOption"
+            class="chart"
+          />
         </CustomCard>
       </a-col>
       <a-col :span="8">
-        <CustomCard title="厂家不良趋势" :isDarkMode="isDarkMode" class="chart-card">
-          <v-chart ref="manufacturerTrendChart" :option="manufacturerTrendOption" class="chart" />
+        <CustomCard
+          title="厂家不良趋势"
+          :isDarkMode="isDarkMode"
+          class="chart-card"
+        >
+          <v-chart
+            ref="manufacturerTrendChart"
+            :option="manufacturerTrendOption"
+            class="chart"
+          />
         </CustomCard>
       </a-col>
     </a-row>
 
     <!-- 第二行：绝缘耐压、电阻不良、反电动势、外观、噪音 -->
-    <CustomCard :isDarkMode="isDarkMode" class="charts-container-card">
+    <CustomCard
+      :isDarkMode="isDarkMode"
+      class="charts-container-card"
+    >
       <div class="charts-row">
         <div class="chart-item">
           <div class="chart-header">铭牌不良</div>
-          <v-chart ref="tagChart" :option="tagOption" class="chart" />
+          <v-chart
+            ref="tagChart"
+            :option="tagOption"
+            class="chart"
+          />
         </div>
         <div class="chart-item">
           <div class="chart-header">端子变形</div>
-          <v-chart ref="terminalChart" :option="terminalOption" class="chart" />
+          <v-chart
+            ref="terminalChart"
+            :option="terminalOption"
+            class="chart"
+          />
         </div>
         <div class="chart-item">
           <div class="chart-header">外观不良</div>
-          <v-chart ref="appearanceChart" :option="appearanceOption" class="chart" />
+          <v-chart
+            ref="appearanceChart"
+            :option="appearanceOption"
+            class="chart"
+          />
         </div>
         <div class="chart-item">
           <div class="chart-header">轴承噪音</div>
-          <v-chart ref="noiseChart" :option="noiseOption" class="chart" />
+          <v-chart
+            ref="noiseChart"
+            :option="noiseOption"
+            class="chart"
+          />
         </div>
       </div>
     </CustomCard>
@@ -112,30 +197,22 @@
 </template>
 
 <script setup lang="ts">
-
-
-import { ref, onMounted, onUnmounted, nextTick, h, computed } from 'vue'
-import VChart from 'vue-echarts'
-import CustomCard from '@/components/CustomCard.vue'
-import { use } from 'echarts/core'
-import {
-  CanvasRenderer
-} from 'echarts/renderers'
-import {
-  PieChart,
-  LineChart,
-  BarChart
-} from 'echarts/charts'
+import { ref, onMounted, onUnmounted, nextTick, h, computed } from "vue";
+import VChart from "vue-echarts";
+import CustomCard from "@/components/CustomCard.vue";
+import { use } from "echarts/core";
+import { CanvasRenderer } from "echarts/renderers";
+import { PieChart, LineChart, BarChart } from "echarts/charts";
 import {
   TitleComponent,
   TooltipComponent,
   LegendComponent,
-  GridComponent
-} from 'echarts/components'
-import { useDashboard } from './useDashboard'
+  GridComponent,
+} from "echarts/components";
+import { useDashboard } from "./useDashboard";
 
-import moment from 'moment'
-moment.locale('zh-cn')
+import moment from "moment";
+moment.locale("zh-cn");
 
 // 使用dashboard hook
 const {
@@ -152,8 +229,8 @@ const {
   getManufacturerTrendXAxis,
   getDefectTrendChartData,
   getCompletionRateData,
-  clearError
-} = useDashboard()
+  clearError,
+} = useDashboard();
 
 use([
   CanvasRenderer,
@@ -163,56 +240,59 @@ use([
   TitleComponent,
   TooltipComponent,
   LegendComponent,
-  GridComponent
-])
+  GridComponent,
+]);
 
 // 深色模式状态
-const isDarkMode = ref(false)
+const isDarkMode = ref(false);
 
 // 全屏模式状态
-const isFullscreen = ref(false)
+const isFullscreen = ref(false);
 
 // 定时器引用
-const refreshTimer = ref<NodeJS.Timeout | null>(null)
+const refreshTimer = ref<NodeJS.Timeout | null>(null);
+
+// 上一次请求是否成功的标志
+const lastRequestSuccess = ref(true);
 
 // 计算属性：统计数据
-const totalCompleted = computed(() => dashboardData.stats.totalCompleted)
-const qualifiedCount = computed(() => dashboardData.stats.qualifiedCount)
-const unqualifiedCount = computed(() => dashboardData.stats.unqualifiedCount)
+const totalCompleted = computed(() => dashboardData.stats.totalCompleted);
+const qualifiedCount = computed(() => dashboardData.stats.qualifiedCount);
+const unqualifiedCount = computed(() => dashboardData.stats.unqualifiedCount);
 
 // 切换主题函数
 const toggleTheme = () => {
-  isDarkMode.value = !isDarkMode.value
-  localStorage.setItem('dashboard-dark-mode', isDarkMode.value.toString())
-}
+  isDarkMode.value = !isDarkMode.value;
+  localStorage.setItem("dashboard-dark-mode", isDarkMode.value.toString());
+};
 
 // 全屏切换函数
 const toggleFullscreen = () => {
   if (!isFullscreen.value) {
     // 进入全屏
-    const element = document.querySelector('.dashboard') as HTMLElement
+    const element = document.querySelector(".dashboard") as HTMLElement;
     if (element.requestFullscreen) {
-      element.requestFullscreen()
+      element.requestFullscreen();
     } else if ((element as any).webkitRequestFullscreen) {
       // Safari
-      (element as any).webkitRequestFullscreen()
+      (element as any).webkitRequestFullscreen();
     } else if ((element as any).msRequestFullscreen) {
       // IE11
-      (element as any).msRequestFullscreen()
+      (element as any).msRequestFullscreen();
     }
   } else {
     // 退出全屏
     if (document.exitFullscreen) {
-      document.exitFullscreen()
+      document.exitFullscreen();
     } else if ((document as any).webkitExitFullscreen) {
       // Safari
-      (document as any).webkitExitFullscreen()
+      (document as any).webkitExitFullscreen();
     } else if ((document as any).msExitFullscreen) {
       // IE11
-      (document as any).msExitFullscreen()
+      (document as any).msExitFullscreen();
     }
   }
-}
+};
 
 // 监听全屏状态变化
 const handleFullscreenChange = () => {
@@ -220,48 +300,55 @@ const handleFullscreenChange = () => {
     document.fullscreenElement ||
     (document as any).webkitFullscreenElement ||
     (document as any).msFullscreenElement
-  )
-}
+  );
+};
 
 // 启动自动刷新定时器
 const startAutoRefresh = () => {
   // 清除现有定时器
   if (refreshTimer.value) {
-    clearInterval(refreshTimer.value)
+    clearInterval(refreshTimer.value);
   }
-  // 设置新的定时器，每5秒刷新一次
-  refreshTimer.value = setInterval(() => {
-    fetchDashboardData()
-  }, 5000)
-}
+  // 根据上一次请求状态决定刷新间隔
+  // 成功：30秒，失败：1分钟
+  const interval = lastRequestSuccess.value ? 30000 : 60000;
+  refreshTimer.value = setInterval(async () => {
+    const success = await fetchDashboardData();
+    lastRequestSuccess.value = success;
+    // 根据本次请求结果，重新设置定时器间隔
+    startAutoRefresh();
+  }, interval);
+};
 
 // 停止自动刷新定时器
 const stopAutoRefresh = () => {
   if (refreshTimer.value) {
-    clearInterval(refreshTimer.value)
-    refreshTimer.value = null
+    clearInterval(refreshTimer.value);
+    refreshTimer.value = null;
   }
-}
+};
 
 // 手动刷新处理函数
-const handleManualRefresh = () => {
+const handleManualRefresh = async () => {
   // 停止当前定时器
-  stopAutoRefresh()
-  // 执行刷新
-  refreshData()
-  // 重新启动定时器
-  startAutoRefresh()
-}
+  stopAutoRefresh();
+  // 执行刷新并获取结果
+  const success = await refreshData();
+  lastRequestSuccess.value = success;
+
+  // 重新启动定时器（会根据lastRequestSuccess自动选择间隔）
+  startAutoRefresh();
+};
 
 // 图表引用
-const qualityRateChart = ref()
-const completionRateChart = ref()
-const defectTypeChart = ref()
-const manufacturerTrendChart = ref()
-const terminalChart = ref()
-const tagChart = ref()
-const appearanceChart = ref()
-const noiseChart = ref()
+const qualityRateChart = ref();
+const completionRateChart = ref();
+const defectTypeChart = ref();
+const manufacturerTrendChart = ref();
+const terminalChart = ref();
+const tagChart = ref();
+const appearanceChart = ref();
+const noiseChart = ref();
 
 // 所有图表的引用数组
 const allCharts = [
@@ -272,269 +359,277 @@ const allCharts = [
   terminalChart,
   tagChart,
   appearanceChart,
-  noiseChart
-]
+  noiseChart,
+];
 
 // 合格率饼图配置
 const qualityRateOption = computed(() => ({
   tooltip: {
-    trigger: 'item',
-    formatter: '{a} <br/>{b}: {c}% ({d}%)'
+    trigger: "item",
+    formatter: "{a} <br/>{b}: {c}% ({d}%)",
   },
   legend: {
-    orient: 'horizontal',
+    orient: "horizontal",
     bottom: 5,
-    left: 'center',
+    left: "center",
     itemGap: 20,
     textStyle: {
-      color: isDarkMode.value ? '#ffffff' : '#333333'
-    }
+      color: isDarkMode.value ? "#ffffff" : "#333333",
+    },
   },
   series: [
     {
-      name: '合格率',
-      type: 'pie',
-      radius: ['25%', '55%'],
-      center: ['50%', '40%'],
+      name: "合格率",
+      type: "pie",
+      radius: ["25%", "55%"],
+      center: ["50%", "40%"],
       avoidLabelOverlap: false,
       label: {
         show: true,
-        position: 'outside',
-        formatter: '{b}: {d}%',
+        position: "outside",
+        formatter: "{b}: {d}%",
         fontSize: 10,
-        fontWeight: 'bold',
-        color: isDarkMode.value ? '#ffffff' : '#333333'
+        fontWeight: "bold",
+        color: isDarkMode.value ? "#ffffff" : "#333333",
       },
       labelLine: {
         show: true,
         length: 8,
-        length2: 5
+        length2: 5,
       },
       emphasis: {
         label: {
           show: true,
-          fontSize: '16',
-          fontWeight: 'bold'
-        }
+          fontSize: "16",
+          fontWeight: "bold",
+        },
       },
-      data: getQualityRateChartData()
-    }
-  ]
-}))
+      data: getQualityRateChartData(),
+    },
+  ],
+}));
 
 // 完工率柱状图配置
 const completionRateOption = computed(() => {
-  const completionData = getCompletionRateData()
+  const completionData = getCompletionRateData();
   return {
     tooltip: {
-      trigger: 'axis',
+      trigger: "axis",
       axisPointer: {
-        type: 'shadow'
+        type: "shadow",
       },
-      formatter: '{a} <br/>{b}: {c}%'
+      formatter: "{a} <br/>{b}: {c}%",
     },
     grid: {
-      left: '15%',
-      right: '8%',
-      bottom: '15%',
-      top: '15%',
-      containLabel: true
+      left: "15%",
+      right: "8%",
+      bottom: "15%",
+      top: "15%",
+      containLabel: true,
     },
     xAxis: {
-      type: 'value',
+      type: "value",
       min: 0,
       max: 100,
       axisLabel: {
-        formatter: '{value}%',
+        formatter: "{value}%",
         fontSize: 9,
-        color: isDarkMode.value ? '#ffffff' : '#333333'
-      }
+        color: isDarkMode.value ? "#ffffff" : "#333333",
+      },
     },
     yAxis: {
-      type: 'category',
+      type: "category",
       data: completionData.yAxis,
       axisLabel: {
         fontSize: 9,
-        color: isDarkMode.value ? '#ffffff' : '#333333'
-      }
+        color: isDarkMode.value ? "#ffffff" : "#333333",
+      },
     },
-    series: [{
-      name: '完工率',
-      type: 'bar',
-      data: completionData.series[0].data,
-      itemStyle: completionData.series[0].itemStyle,
-      label: {
-        show: true,
-        position: 'right',
-        formatter: '{c}%',
-        fontSize: 9
-      }
-    }]
-  }
-})
+    series: [
+      {
+        name: "完工率",
+        type: "bar",
+        data: completionData.series[0].data,
+        itemStyle: completionData.series[0].itemStyle,
+        label: {
+          show: true,
+          position: "right",
+          formatter: "{c}%",
+          fontSize: 9,
+        },
+      },
+    ],
+  };
+});
 
 // 不良类型分布饼图配置
 const defectTypeOption = computed(() => ({
   tooltip: {
-    trigger: 'item',
-    formatter: '{a} <br/>{b}: {c}% ({d}%)'
+    trigger: "item",
+    formatter: "{a} <br/>{b}: {c}% ({d}%)",
   },
   legend: {
-    orient: 'vertical',
-    left: 'left',
+    orient: "vertical",
+    left: "left",
     textStyle: {
-      color: isDarkMode.value ? '#ffffff' : '#333333'
-    }
+      color: isDarkMode.value ? "#ffffff" : "#333333",
+    },
   },
   series: [
     {
-      name: '不良类型',
-      type: 'pie',
-      radius: '70%',
+      name: "不良类型",
+      type: "pie",
+      radius: "70%",
       data: getDefectTypeChartData(),
       emphasis: {
         itemStyle: {
           shadowBlur: 10,
           shadowOffsetX: 0,
-          shadowColor: 'rgba(0, 0, 0, 0.5)'
-        }
-      }
-    }
-  ]
-}))
+          shadowColor: "rgba(0, 0, 0, 0.5)",
+        },
+      },
+    },
+  ],
+}));
 
 // 厂家不良趋势折线图配置
 const manufacturerTrendOption = computed(() => ({
   tooltip: {
-    trigger: 'axis'
+    trigger: "axis",
   },
   legend: {
     data: Object.keys(dashboardData.manufacturerTrends),
     textStyle: {
-      color: isDarkMode.value ? '#ffffff' : '#333333'
-    }
+      color: isDarkMode.value ? "#ffffff" : "#333333",
+    },
   },
   grid: {
-    left: '3%',
-    right: '4%',
-    bottom: '3%',
-    containLabel: true
+    left: "3%",
+    right: "4%",
+    bottom: "3%",
+    containLabel: true,
   },
   xAxis: {
-    type: 'category',
+    type: "category",
     boundaryGap: false,
     data: getManufacturerTrendXAxis(),
     axisLabel: {
-      color: isDarkMode.value ? '#ffffff' : '#333333'
-    }
+      color: isDarkMode.value ? "#ffffff" : "#333333",
+    },
   },
   yAxis: {
-    type: 'value',
+    type: "value",
     axisLabel: {
-      formatter: '{value}%',
-      color: isDarkMode.value ? '#ffffff' : '#333333'
-    }
+      formatter: "{value}%",
+      color: isDarkMode.value ? "#ffffff" : "#333333",
+    },
   },
-  series: getManufacturerTrendData()
-}))
+  series: getManufacturerTrendData(),
+}));
 
 // 生成折线图数据的通用函数
-const generateLineChartOption = (type: keyof typeof dashboardData.defectTrends) => {
-  const trendData = getDefectTrendChartData(type)
+const generateLineChartOption = (
+  type: keyof typeof dashboardData.defectTrends
+) => {
+  const trendData = getDefectTrendChartData(type);
   return {
     tooltip: {
-      trigger: 'axis'
+      trigger: "axis",
     },
     grid: {
-      left: '3%',
-      right: '4%',
-      bottom: '3%',
-      containLabel: true
+      left: "3%",
+      right: "4%",
+      bottom: "3%",
+      containLabel: true,
     },
     xAxis: {
-      type: 'category',
+      type: "category",
       boundaryGap: false,
       data: trendData.xAxis,
       axisLabel: {
-        color: isDarkMode.value ? '#ffffff' : '#333333'
-      }
+        color: isDarkMode.value ? "#ffffff" : "#333333",
+      },
     },
     yAxis: {
-      type: 'value',
+      type: "value",
       axisLabel: {
-        formatter: '{value}个',
-        color: isDarkMode.value ? '#ffffff' : '#333333'
-      }
+        formatter: "{value}个",
+        color: isDarkMode.value ? "#ffffff" : "#333333",
+      },
     },
-    series: trendData.series
-  }
-}
+    series: trendData.series,
+  };
+};
 
 // 各项指标的折线图配置
-const terminalOption = computed(() => generateLineChartOption('terminal'))
-const tagOption = computed(() => generateLineChartOption('tag'))
-const appearanceOption = computed(() => generateLineChartOption('appearance'))
-const noiseOption = computed(() => generateLineChartOption('noise'))
+const terminalOption = computed(() => generateLineChartOption("terminal"));
+const tagOption = computed(() => generateLineChartOption("tag"));
+const appearanceOption = computed(() => generateLineChartOption("appearance"));
+const noiseOption = computed(() => generateLineChartOption("noise"));
 
 // 防抖函数
 const debounce = (func: Function, wait: number) => {
-  let timeout: NodeJS.Timeout
+  let timeout: NodeJS.Timeout;
   return function executedFunction(...args: any[]) {
     const later = () => {
-      clearTimeout(timeout)
-      func(...args)
-    }
-    clearTimeout(timeout)
-    timeout = setTimeout(later, wait)
-  }
-}
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+};
 
 // 处理窗口resize事件
 const handleResize = debounce(() => {
   nextTick(() => {
-    allCharts.forEach(chartRef => {
+    allCharts.forEach((chartRef) => {
       if (chartRef.value) {
-        chartRef.value.resize()
+        chartRef.value.resize();
       }
-    })
-  })
-}, 200)
+    });
+  });
+}, 200);
 
-onMounted(() => {
+onMounted(async () => {
   // 从localStorage恢复深色模式设置
-  const savedDarkMode = localStorage.getItem('dashboard-dark-mode')
+  const savedDarkMode = localStorage.getItem("dashboard-dark-mode");
   if (savedDarkMode) {
-    isDarkMode.value = savedDarkMode === 'true'
+    isDarkMode.value = savedDarkMode === "true";
   }
 
   // 初始化时获取数据
-  fetchDashboardData()
-  console.log('Dashboard mounted')
+  const success = await fetchDashboardData();
+  lastRequestSuccess.value = success;
+  console.log("Dashboard mounted");
 
   // 启动自动刷新定时器
-  startAutoRefresh()
+  startAutoRefresh();
 
   // 添加resize监听器
-  window.addEventListener('resize', handleResize)
+  window.addEventListener("resize", handleResize);
 
   // 添加全屏状态变化监听器
-  document.addEventListener('fullscreenchange', handleFullscreenChange)
-  document.addEventListener('webkitfullscreenchange', handleFullscreenChange)
-  document.addEventListener('msfullscreenchange', handleFullscreenChange)
-})
+  document.addEventListener("fullscreenchange", handleFullscreenChange);
+  document.addEventListener("webkitfullscreenchange", handleFullscreenChange);
+  document.addEventListener("msfullscreenchange", handleFullscreenChange);
+});
 
 onUnmounted(() => {
   // 停止自动刷新定时器
-  stopAutoRefresh()
+  stopAutoRefresh();
 
   // 移除resize监听器
-  window.removeEventListener('resize', handleResize)
+  window.removeEventListener("resize", handleResize);
 
   // 移除全屏状态变化监听器
-  document.removeEventListener('fullscreenchange', handleFullscreenChange)
-  document.removeEventListener('webkitfullscreenchange', handleFullscreenChange)
-  document.removeEventListener('msfullscreenchange', handleFullscreenChange)
-})
+  document.removeEventListener("fullscreenchange", handleFullscreenChange);
+  document.removeEventListener(
+    "webkitfullscreenchange",
+    handleFullscreenChange
+  );
+  document.removeEventListener("msfullscreenchange", handleFullscreenChange);
+});
 </script>
 
 <style scoped>
@@ -640,7 +735,7 @@ onUnmounted(() => {
   margin-top: 30px;
   position: relative;
   text-align: center;
-  background-image: url('@/assets/titleBg.png');
+  background-image: url("@/assets/titleBg.png");
   background-size: 80% 80%;
   background-position: center;
   background-repeat: no-repeat;
@@ -674,7 +769,6 @@ onUnmounted(() => {
   gap: 8px;
 }
 
-
 .status-indicator {
   display: flex;
   gap: 20px;
@@ -700,7 +794,7 @@ onUnmounted(() => {
 }
 
 .status-dot.online::after {
-  content: '';
+  content: "";
   position: absolute;
   top: -2px;
   left: -2px;
@@ -713,7 +807,6 @@ onUnmounted(() => {
 
 /* 动画效果 */
 @keyframes gradientShift {
-
   0%,
   100% {
     background-position: 0% 50%;
@@ -725,7 +818,6 @@ onUnmounted(() => {
 }
 
 @keyframes pulse {
-
   0%,
   100% {
     transform: scale(1);
@@ -737,7 +829,6 @@ onUnmounted(() => {
 }
 
 @keyframes blink {
-
   0%,
   100% {
     opacity: 1;
@@ -971,8 +1062,6 @@ onUnmounted(() => {
 .dashboard.dark-mode :deep(.ant-picker-suffix) {
   color: #ffffff;
 }
-
-
 
 /* 响应式设计 */
 @media (max-width: 1024px) {

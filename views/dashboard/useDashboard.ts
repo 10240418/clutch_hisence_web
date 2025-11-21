@@ -254,7 +254,7 @@ export const useDashboard = () => {
   }
 
   // 获取dashboard数据
-  const fetchDashboardData = async (startDateParam?: string, endDateParam?: string) => {
+  const fetchDashboardData = async (startDateParam?: string, endDateParam?: string): Promise<boolean> => {
     loading.value = true
     error.value = null
 
@@ -272,17 +272,22 @@ export const useDashboard = () => {
         transformApiData(response.data.data)
       }
 
+      // 请求成功，返回true
+      return true
+
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Failed to fetch dashboard data'
       console.error('Error fetching dashboard data:', err)
+      // 请求失败，返回false
+      return false
     } finally {
       loading.value = false
     }
   }
 
   // 刷新数据
-  const refreshData = () => {
-    fetchDashboardData()
+  const refreshData = async (): Promise<boolean> => {
+    return await fetchDashboardData()
   }
 
 
