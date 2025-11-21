@@ -1,7 +1,7 @@
 import { ref } from 'vue';
 import { message } from 'ant-design-vue';
 import dayjs, { Dayjs } from 'dayjs';
-import { getDefectReport, getSuppliers, getProductModels } from '@/httpapis/management';
+import { getDefectReport, getSuppliers } from '@/httpapis/management';
 import ExcelJS from 'exceljs';
 
 interface DefectReportItem {
@@ -11,6 +11,7 @@ interface DefectReportItem {
     productModelSN: string;
     batchNumber: string;
     defectReason: string;
+    description?: string;
 }
 
 interface DefectReportQueryParams {
@@ -19,14 +20,13 @@ interface DefectReportQueryParams {
     startDate?: string;
     endDate?: string;
     supplierId?: number;
-    productModelSN?: string;
+    description?: string;
 }
 
 export const useDefectReportData = () => {
     const isLoading = ref(false);
     const data = ref<DefectReportItem[]>([]);
     const suppliers = ref<any[]>([]);
-    const productModels = ref<any[]>([]);
     const pagination = ref({
         pageNum: 1,
         pageSize: 10,
@@ -45,20 +45,25 @@ export const useDefectReportData = () => {
             key: 'supplierName',
         },
         {
+            title: '产品型号',
+            dataIndex: 'description',
+            key: 'description',
+        },
+        {
+            title: '物料编码',
+            dataIndex: 'productModelSN',
+            key: 'productModelSN',
+        },
+        {
             title: '检测日期',
             dataIndex: 'qualityDate',
             key: 'qualityDate',
             customRender: ({ text }: { text: string }) => text ? dayjs(text).format('YYYY-MM-DD HH:mm:ss') : '',
         },
         {
-            title: '产品SN',
+            title: '电机SN',
             dataIndex: 'productSN',
             key: 'productSN',
-        },
-        {
-            title: '产品型号',
-            dataIndex: 'description',
-            key: 'description',
         },
         {
             title: '批次号',
@@ -78,8 +83,17 @@ export const useDefectReportData = () => {
 
         try {
             const response = await getDefectReport(query);
-            data.value = response.data.data;
-            pagination.value.total = response.data.pagination.total;
+            let defectData = response.data.data || [];
+
+            // Client-side filtering to ensure only matching description products are shown
+            if (selectedProductModelSN.value) {
+                defectData = defectData.filter((item: DefectReportItem) =>
+                    item.description === selectedProductModelSN.value
+                );
+            }
+
+            data.value = defectData;
+            pagination.value.total = defectData.length;
         } catch (error: any) {
             message.error(`获取缺陷报表失败: ${error.response?.data?.error || error.message}`);
             return Promise.reject(error);
@@ -94,15 +108,6 @@ export const useDefectReportData = () => {
             suppliers.value = response.data.data;
         } catch (error: any) {
             message.error(`加载供应商失败: ${error.response?.data?.error || error.message}`);
-        }
-    };
-
-    const loadProductModels = async () => {
-        try {
-            const response = await getProductModels({ pageSize: 100 });
-            productModels.value = response.data.data;
-        } catch (error: any) {
-            message.error(`加载产品型号失败: ${error.response?.data?.error || error.message}`);
         }
     };
 
@@ -122,7 +127,7 @@ export const useDefectReportData = () => {
 
         // Add filters if they have values
         if (selectedSupplierId.value) query.supplierId = selectedSupplierId.value;
-        if (selectedProductModelSN.value) query.productModelSN = selectedProductModelSN.value;
+        if (selectedProductModelSN.value) query.description = selectedProductModelSN.value;
 
         // Handle date range
         if (dateRange.value && dateRange.value.length === 2) {
@@ -131,6 +136,7 @@ export const useDefectReportData = () => {
         }
 
         return query;
+
     };
 
     // Excel导出功能
@@ -279,7 +285,6 @@ export const useDefectReportData = () => {
         isLoading,
         data,
         suppliers,
-        productModels,
         columns,
         pagination,
         dateRange,
@@ -287,7 +292,6 @@ export const useDefectReportData = () => {
         selectedProductModelSN,
         list,
         loadSuppliers,
-        loadProductModels,
         resetFilters,
         exportToExcel
     };

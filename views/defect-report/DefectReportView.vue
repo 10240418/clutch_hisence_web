@@ -12,10 +12,8 @@ const {
     data,
     isLoading,
     suppliers,
-    productModels,
     list,
     loadSuppliers,
-    loadProductModels,
     resetFilters,
     exportToExcel
 } = useDefectReportData();
@@ -43,10 +41,7 @@ watch(selectedSupplierId, () => {
     autoSearch();
 });
 
-// 监听产品型号选择变化，自动触发搜索
-watch(selectedProductModelSN, () => {
-    autoSearch();
-});
+// Note: Product model search is now triggered by search button, not auto-search
 
 const onPageChange = () => {
     list();
@@ -64,7 +59,6 @@ const onExport = () => {
 // Load data when component is mounted
 onMounted(async () => {
     await loadSuppliers();
-    await loadProductModels();
     list();
 });
 </script>
@@ -82,11 +76,10 @@ onMounted(async () => {
                     </a-select-option>
                 </a-select>
 
-                <a-select v-model:value="selectedProductModelSN" placeholder="选择产品型号" allowClear style="width: 200px;">
-                    <a-select-option v-for="model in productModels" :key="model.sn" :value="model.sn">
-                        {{ model.sn }} - {{ model.description }}
-                    </a-select-option>
-                </a-select>
+                <a-input v-model:value="selectedProductModelSN" placeholder="输入产品型号"
+                    style="width: 200px;" allowClear @pressEnter="autoSearch" />
+                <a-button type="primary" @click="autoSearch">搜索</a-button>
+
             </div>
 
             <div style="display: flex; gap: 8px;">

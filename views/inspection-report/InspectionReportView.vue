@@ -10,11 +10,14 @@ const {
   inputProductModelSN,
   inputBatchNumber,
   inputSupplierName,
+  selectedProductLineId,
+  productLines,
   data,
   isLoading,
   list,
   resetFilters,
-  exportToExcel
+  exportToExcel,
+  loadProductLines
 } = useInspectionReportData();
 
 let searchTimeout: NodeJS.Timeout | null = null;
@@ -30,12 +33,16 @@ watch(dateRange, autoSearch, { deep: true });
 watch(inputProductModelSN, autoSearch);
 watch(inputBatchNumber, autoSearch);
 watch(inputSupplierName, autoSearch);
+watch(selectedProductLineId, autoSearch);
 
 const onPageChange = () => list();
 const onReset = () => { resetFilters(); list(); };
 const onExport = () => exportToExcel();
 
-onMounted(() => { list(); });
+onMounted(async () => {
+  await loadProductLines();
+  list();
+});
 </script>
 
 <template>
@@ -47,6 +54,11 @@ onMounted(() => { list(); });
         <a-input v-model:value="inputProductModelSN" placeholder="物料编码" allowClear style="width:150px" />
         <a-input v-model:value="inputBatchNumber" placeholder="批次号" allowClear style="width:120px" />
         <a-input v-model:value="inputSupplierName" placeholder="供应商" allowClear style="width:180px" />
+        <a-select v-model:value="selectedProductLineId" placeholder="选择产线" allowClear style="width:150px">
+          <a-select-option v-for="line in productLines" :key="line.id" :value="line.id">
+            {{ line.name }}
+          </a-select-option>
+        </a-select>
       </div>
       <div style="display:flex;gap:8px;">
         <a-button @click="onReset">重置筛选</a-button>
@@ -57,7 +69,10 @@ onMounted(() => { list(); });
     <a-table :columns="columns" :data-source="data" :pagination="false" :loading="isLoading" size="middle"
       :scroll="{ x: 900 }">
       <template #bodyCell="{ column, record }">
-        <template v-if="column.key === 'unqualifiedCount'">
+        <template v-if="column.key === 'productModelSN'">
+          {{ record.productModelSN }}<span v-if="record.batchNumber">{{ record.batchNumber }}</span>
+        </template>
+        <template v-else-if="column.key === 'unqualifiedCount'">
           <a-tag :color="record.unqualifiedCount > 0 ? 'red' : 'green'">{{ record.unqualifiedCount }}</a-tag>
         </template>
         <template v-else-if="column.key === 'qualifiedCount'">

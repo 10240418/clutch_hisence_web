@@ -10,7 +10,7 @@ interface ProductQueryParams {
     pageSize: number;
     startTime?: string;
     endTime?: string;
-    search?: string;
+    description?: string;
     productLineId?: number;
     hasDefect?: boolean;
     defectReason?: string;
@@ -46,20 +46,20 @@ export const useProductData = () => {
 
     const columns = [
         {
+            title: '产品型号',
+            dataIndex: ['productModel', 'description'],
+            key: 'productModel',
+        },
+        {
             title: 'ID',
             dataIndex: 'id',
             key: 'id',
             width: 40,
         },
         {
-            title: 'SN',
+            title: '电机SN',
             dataIndex: 'sn',
             key: 'sn',
-        },
-        {
-            title: '产品型号',
-            dataIndex: ['productModel', 'description'],
-            key: 'productModel',
         },
         {
             title: '产品线',
@@ -130,8 +130,16 @@ export const useProductData = () => {
             pageSize: pagination.value.pageSize,
         };
 
+        // If no search keyword, do not load data
+        if (!searchKeyword.value) {
+            data.value = [];
+            pagination.value.total = 0;
+            isLoading.value = false;
+            return;
+        }
+
         // Add filters if they have values
-        if (searchKeyword.value) query.search = searchKeyword.value;
+        if (searchKeyword.value) query.description = searchKeyword.value;
         if (selectedProductLineId.value) query.productLineId = selectedProductLineId.value;
         if (hasDefect.value !== undefined) query.hasDefect = hasDefect.value;
         if (defectReason.value) query.defectReason = defectReason.value;
@@ -144,8 +152,17 @@ export const useProductData = () => {
 
         try {
             const response = await getProducts(query);
-            data.value = response.data.data;
-            pagination.value.total = response.data.pagination.total;
+            let products = response.data.data;
+
+            // Client-side filtering to ensure only matching description products are shown
+            if (searchKeyword.value) {
+                products = products.filter((product: Product) =>
+                    product.productModel?.description === searchKeyword.value
+                );
+            }
+
+            data.value = products;
+            pagination.value.total = products.length;
         } catch (error: any) {
             message.error(`Failed to list products: ${error.response?.data?.error || error.message}`);
             return Promise.reject(error);

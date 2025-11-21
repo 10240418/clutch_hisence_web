@@ -2,7 +2,7 @@ import { ref } from 'vue';
 import { message } from 'ant-design-vue';
 import dayjs, { Dayjs } from 'dayjs';
 import ExcelJS from 'exceljs';
-import { getInspectionReport } from '@/httpapis/management';
+import { getInspectionReport, getProductLines } from '@/httpapis/management';
 
 interface InspectionReportItem {
   productModelSN: string;
@@ -11,6 +11,8 @@ interface InspectionReportItem {
   qualifiedCount: number;
   unqualifiedCount: number;
   supplierName: string;
+  description?: string;
+  productLine?: string;
   inspectionDate: string; // ISO date
 }
 
@@ -20,6 +22,7 @@ interface InspectionReportQueryParams {
   productModelSN?: string;
   batchNumber?: string;
   supplierName?: string;
+  productLineId?: number;
   startDate?: string;
   endDate?: string;
 }
@@ -38,15 +41,17 @@ export const useInspectionReportData = () => {
   const inputProductModelSN = ref<string>('');
   const inputBatchNumber = ref<string>('');
   const inputSupplierName = ref<string>('');
+  const selectedProductLineId = ref<number | undefined>(undefined);
+  const productLines = ref<any[]>([]);
 
   const columns = [
-    { title: '物料编码', dataIndex: 'productModelSN', key: 'productModelSN' },
-    { title: '批次号', dataIndex: 'batchNumber', key: 'batchNumber' },
+    { title: '供应商', dataIndex: 'supplierName', key: 'supplierName' },
+    { title: '产品型号', dataIndex: 'description', key: 'description' },
+    { title: '物料编码/批次号', dataIndex: 'productModelSN', key: 'productModelSN' },
+    { title: '产线', dataIndex: 'productLine', key: 'productLine' },
     { title: '检测总数', dataIndex: 'inspectionCount', key: 'inspectionCount' },
     { title: '合格数', dataIndex: 'qualifiedCount', key: 'qualifiedCount' },
     { title: '不合格数', dataIndex: 'unqualifiedCount', key: 'unqualifiedCount' },
-    { title: '供应商', dataIndex: 'supplierName', key: 'supplierName' },
-    { title: '产品型号', dataIndex: 'description', key: 'description' },
     { title: '检验日期', dataIndex: 'inspectionDate', key: 'inspectionDate', customRender: ({ text }: { text: string }) => text ? dayjs(text).format('YYYY-MM-DD') : '' },
   ];
 
@@ -59,11 +64,15 @@ export const useInspectionReportData = () => {
     if (inputProductModelSN.value) query.productModelSN = inputProductModelSN.value.trim();
     if (inputBatchNumber.value) query.batchNumber = inputBatchNumber.value.trim();
     if (inputSupplierName.value) query.supplierName = inputSupplierName.value.trim();
+    if (selectedProductLineId.value) {
+      query.productLineId = selectedProductLineId.value;
+    }
 
     if (dateRange.value && dateRange.value.length === 2) {
       query.startDate = dateRange.value[0].format('YYYY-MM-DD');
       query.endDate = dateRange.value[1].format('YYYY-MM-DD');
     }
+
     return query;
   };
 
@@ -71,8 +80,19 @@ export const useInspectionReportData = () => {
     isLoading.value = true;
     try {
       const response = await getInspectionReport(buildQuery());
-      data.value = response.data.data || [];
-      pagination.value.total = response.data.pagination?.total || 0;
+      let responseData = response.data.data || [];
+
+      // 如果后端没有按产品线筛选，前端进行临时筛选
+      if (selectedProductLineId.value && responseData.length > 0) {
+        // 获取选中产品线的名称
+        const selectedLine = productLines.value.find(line => line.id === selectedProductLineId.value);
+        if (selectedLine) {
+          responseData = responseData.filter((item: InspectionReportItem) => item.productLine === selectedLine.name);
+        }
+      }
+
+      data.value = responseData;
+      pagination.value.total = responseData.length;
     } catch (error: any) {
       message.error(`获取全检报表失败: ${error.response?.data?.error || error.message}`);
       return Promise.reject(error);
@@ -86,7 +106,17 @@ export const useInspectionReportData = () => {
     inputProductModelSN.value = '';
     inputBatchNumber.value = '';
     inputSupplierName.value = '';
+    selectedProductLineId.value = undefined;
     pagination.value.pageNum = 1;
+  };
+
+  const loadProductLines = async () => {
+    try {
+      const response = await getProductLines({ pageSize: 100 });
+      productLines.value = response.data.data;
+    } catch (error: any) {
+      message.error(`加载产品线失败: ${error.response?.data?.error || error.message}`);
+    }
   };
 
   const exportToExcel = async () => {
@@ -103,8 +133,9 @@ export const useInspectionReportData = () => {
       const worksheet = workbook.addWorksheet('全检报表');
 
       worksheet.columns = [
-        { width: 15 }, // 物料编码
-        { width: 15 }, // 批次号
+        { width: 25 }, // 物料编码/批次号
+        { width: 20 }, // 产品型号
+        { width: 15 }, // 产线
         { width: 12 }, // 检验数量
         { width: 12 }, // 合格数
         { width: 12 }, // 不合格数
@@ -121,12 +152,17 @@ export const useInspectionReportData = () => {
       worksheet.addRow(['合格/不合格:', `${qualifiedTotal} / ${unqualifiedTotal}`, '', '', '', '', '']);
       worksheet.addRow(['导出日期:', currentDate, '', '', '', '', '']);
       worksheet.addRow(['', '', '', '', '', '', '']);
-      worksheet.addRow(['物料编码', '批次号', '检验数量', '合格数', '不合格数', '供应商', '检验日期']);
+      worksheet.addRow(['物料编码/批次号', '产品型号', '产线', '检验数量', '合格数', '不合格数', '供应商', '检验日期']);
 
       allData.forEach(item => {
+        const productAndBatch = item.productModelSN
+          ? item.productModelSN + (item.batchNumber ? `/${item.batchNumber}` : '')
+          : (item.batchNumber || '');
+
         worksheet.addRow([
-          item.productModelSN || '',
-          item.batchNumber || '',
+          productAndBatch,
+          item.description || '',
+          item.productLine || '',
           item.inspectionCount ?? 0,
           item.qualifiedCount ?? 0,
           item.unqualifiedCount ?? 0,
@@ -200,8 +236,11 @@ export const useInspectionReportData = () => {
     inputProductModelSN,
     inputBatchNumber,
     inputSupplierName,
+    selectedProductLineId,
+    productLines,
     list,
     resetFilters,
     exportToExcel,
+    loadProductLines,
   };
 };
