@@ -93,7 +93,7 @@ export const useDefectReportData = () => {
             }
 
             data.value = defectData;
-            pagination.value.total = defectData.length;
+            pagination.value.total = response.data.pagination.total;
         } catch (error: any) {
             message.error(`获取缺陷报表失败: ${error.response?.data?.error || error.message}`);
             return Promise.reject(error);

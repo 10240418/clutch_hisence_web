@@ -162,7 +162,7 @@ export const useProductData = () => {
             }
 
             data.value = products;
-            pagination.value.total = products.length;
+            pagination.value.total = response.data.pagination.total;
         } catch (error: any) {
             message.error(`Failed to list products: ${error.response?.data?.error || error.message}`);
             return Promise.reject(error);

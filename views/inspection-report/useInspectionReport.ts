@@ -92,7 +92,7 @@ export const useInspectionReportData = () => {
       }
 
       data.value = responseData;
-      pagination.value.total = responseData.length;
+      pagination.value.total = response.data.pagination.total;
     } catch (error: any) {
       message.error(`获取全检报表失败: ${error.response?.data?.error || error.message}`);
       return Promise.reject(error);
